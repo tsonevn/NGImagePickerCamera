@@ -3,6 +3,13 @@
     <Button text="Take picture" (tap)="takePhoto()"></Button>
     
     <GridLayout >
-       <Image id="imageid" width="150" height="150"></Image>
+        <ListView id="listviewid" [items]="imagesArray" class="list-group">
+            <template let-item="item" let-odd="odd" let-even="even">
+              <StackLayout>
+                <Image [src]="item.imgsource"></Image>
+              </StackLayout>
+            </template>
+        </ListView>
     </GridLayout>
+    
 </StackLayout>

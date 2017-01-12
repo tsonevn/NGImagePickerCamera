@@ -5,18 +5,22 @@ var fs = require('file-system');
 import {Page} from "ui/page";
 import {Image} from "ui/image";
 import {ObservableArray} from "data/observable-array";
+import { ImageSource, fromNativeSource } from "image-source";
+import {ListView} from "ui/list-view";
 
 
 @Component({
     selector: "my-app",
-    templateUrl: "app.component.html",
+    templateUrl: "app.component.html"
 })
 export class AppComponent {
     public imagesArray:ObservableArray<any>;
     public counter = 0;
     public uploadTask;
+    public imgsrc: ImageSource;
     constructor(private page:Page){
         this.imagesArray=new ObservableArray();
+        this.imgsrc = new ImageSource();
     }
 
     onTap(){
@@ -42,10 +46,8 @@ export class AppComponent {
                     console.log("selected map");
                     console.log(selection);
                     selected.getImage().then( v => {
-                        var image:Image = <Image>this.page.getViewById("imageid");
-                        image.src = v;
                         console.log( "In startSelection, v = " + v );
-                        console.dump(v);
+                        this.imagesArray.push({imgsource:v});
                     });
 
                 });
@@ -56,6 +58,7 @@ export class AppComponent {
     }
 
      takePhoto() {
+         var that =this;
         console.log("In takePhoto");
         takePicture({
             width: 300,
@@ -64,10 +67,17 @@ export class AppComponent {
             saveToGallery: true
         }).
             then((imageAsset) => {
-                var image:Image = <Image>this.page.getViewById("imageid");
-                console.log("In camera.takePicture, imageAsset.nativeImage = ");
-                console.dump(imageAsset);
-                image.src=imageAsset;
+              
+                //this.imagesArray.push({imgsource:imageAsset});
+                // setTimeout(()=>{
+                //     var listview:ListView =<ListView> this.page.getViewById("listviewid");
+                //     listview.refresh();
+                // }, 1000)
+                imageAsset.getImageAsync((image) => {
+                    this.imagesArray.push({imgsource:image});
+                })
+
+                
                 
 
             }).catch((err) => {
